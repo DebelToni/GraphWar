@@ -2,13 +2,121 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#101813" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>GraphWar</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <main>
-      <h1>GraphWar</h1>
-      <p>Initial deploy placeholder. Game implementation coming next.</p>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Function artillery on a Cartesian plane</p>
+        <h1>GraphWar</h1>
+      </div>
+      <div id="saveStatus" class="save-status">Saved locally</div>
+    </header>
+
+    <main class="app-shell">
+      <section id="setupPanel" class="panel setup-panel">
+        <div class="section-head">
+          <div>
+            <h2>Local game setup</h2>
+            <p>Players pass the device. State is restored after refresh.</p>
+          </div>
+          <button id="resumeGameBtn" class="secondary hidden" type="button">Resume saved game</button>
+        </div>
+
+        <label class="field">
+          <span>Game mode</span>
+          <select id="modeSelect">
+            <option value="0">Normal Function — y = f(x) + c</option>
+            <option value="1">First Order ODE — y' = f(x, y)</option>
+            <option value="2">Second Order ODE — y'' = f(x, y, y')</option>
+          </select>
+        </label>
+
+        <div class="players-head">
+          <h3>Players</h3>
+          <button id="addPlayerBtn" class="secondary" type="button">Add player</button>
+        </div>
+        <div id="playersList" class="players-list"></div>
+
+        <div class="actions-row">
+          <button id="startGameBtn" class="primary" type="button">Start new match</button>
+          <button id="resetSaveBtn" class="danger" type="button">Clear save</button>
+        </div>
+      </section>
+
+      <section id="gamePanel" class="game-grid hidden">
+        <div class="stage-card">
+          <canvas id="plane" width="770" height="450" aria-label="GraphWar plane"></canvas>
+          <div class="mobile-hint">Tip: constants added in Normal mode do not matter because the graph is shifted to the soldier.</div>
+        </div>
+
+        <aside class="panel control-panel">
+          <div class="turn-card">
+            <p id="modeLabel" class="eyebrow">Normal Function</p>
+            <h2 id="turnTitle">Turn</h2>
+            <div id="timerBar" class="timer-bar"><span></span></div>
+            <p id="turnMeta" class="meta"></p>
+          </div>
+
+          <label class="field">
+            <span id="functionLabel">Function</span>
+            <input id="functionInput" autocomplete="off" spellcheck="false" inputmode="text" placeholder="sin(x)" />
+          </label>
+
+          <div id="presetButtons" class="preset-buttons"></div>
+
+          <div class="angle-box">
+            <div class="angle-head">
+              <span>Angle</span>
+              <strong id="angleValue">0°</strong>
+            </div>
+            <input id="angleSlider" type="range" min="-90" max="90" step="1" value="0" />
+            <div class="angle-buttons">
+              <button id="angleDownBtn" class="secondary" type="button">−</button>
+              <button id="angleUpBtn" class="secondary" type="button">+</button>
+            </div>
+            <small>Only second-order ODE shots use the angle, matching original Graphwar.</small>
+          </div>
+
+          <div class="actions-row compact">
+            <button id="fireBtn" class="primary" type="button">Fire</button>
+            <button id="skipAnimationBtn" class="secondary hidden" type="button">Skip animation</button>
+          </div>
+
+          <div class="actions-row compact">
+            <button id="newLevelBtn" class="secondary" type="button">New level</button>
+            <button id="backSetupBtn" class="secondary" type="button">Setup</button>
+          </div>
+
+          <div id="messageBox" class="message-box"></div>
+          <details class="rules-box">
+            <summary>Rules reference</summary>
+            <ul>
+              <li>Hit enemy soldiers while avoiding obstacles and teammates.</li>
+              <li>Team 1 fires right; Team 2 fires left by mirroring the plane.</li>
+              <li>A shot stops on terrain, screen bounds, undefined values, or max length.</li>
+              <li>Explosion holes remove terrain for later shots.</li>
+            </ul>
+          </details>
+        </aside>
+      </section>
     </main>
+
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const plane = document.getElementById("plane");
+        if (!plane) return;
+        const lockCanvasGesture = (event) => event.preventDefault();
+        plane.addEventListener("touchstart", lockCanvasGesture, { passive: false });
+        plane.addEventListener("touchmove", lockCanvasGesture, { passive: false });
+      });
+    </script>
+    <script src="app.js"></script>
   </body>
 </html>
