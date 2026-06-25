@@ -11,7 +11,6 @@
   .pad-panel,
   .stage-card,
   .formula-field,
-  .message-box,
   .rules-box {
     box-shadow: 2px 2px 0 var(--shadow);
   }
@@ -29,8 +28,7 @@
     gap: 0.2rem;
   }
 
-  .formula-keypad button,
-  .actions-row button {
+  .formula-keypad button {
     min-height: 32px;
   }
 
@@ -50,7 +48,6 @@
   }
 
   .formula-field,
-  .message-box,
   .rules-box {
     padding: 0.3rem;
   }

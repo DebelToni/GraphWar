@@ -30,15 +30,13 @@ function init() {
     plane: $("plane"),
     saveStatus: $("saveStatus"),
     modeLabel: $("modeLabel"),
+    turnCard: $("turnCard"),
     turnTitle: $("turnTitle"),
     timerFill: document.querySelector("#timerBar span"),
     turnMeta: $("turnMeta"),
     functionLabel: $("functionLabel"),
     formulaDisplay: $("formulaDisplay"),
     functionInput: $("functionInput"),
-    fireBtn: $("fireBtn"),
-    skipAnimationBtn: $("skipAnimationBtn"),
-    messageBox: $("messageBox"),
     formulaButtons: [...document.querySelectorAll(".formula-keypad button")]
   });
 
@@ -53,7 +51,7 @@ function init() {
       game = saved.game;
       game.turnStarted = Date.now();
       normalizeSavedGame(game);
-      showGame("Restored saved local match.");
+      showGame();
     } else {
       showSetup();
     }
@@ -71,8 +69,8 @@ function bindEvents() {
   els.startGameBtn.addEventListener("click", () => startNewMatch());
   els.resetSaveBtn.addEventListener("click", clearSaveAndReset);
   els.resumeGameBtn.addEventListener("click", resumeSavedGame);
-  els.fireBtn.addEventListener("click", fireCurrentFunction);
-  els.skipAnimationBtn.addEventListener("click", finishActiveShot);
+  els.plane.addEventListener("pointerup", fireCurrentFunction);
+  els.turnCard.addEventListener("click", confirmReturnHome);
   els.formulaDisplay.addEventListener("pointerdown", placeFormulaCursorFromPointer);
   bindFormulaPad();
 }
@@ -157,7 +155,23 @@ function resumeSavedGame() {
   game = saved.game;
   game.turnStarted = Date.now();
   normalizeSavedGame(game);
-  showGame("Restored saved local match.");
+  showGame();
+}
+
+function confirmReturnHome() {
+  if (!game) return;
+  if (!window.confirm("Return to setup and end this match?")) return;
+  setupPlayers = game.players.map((player) => ({
+    name: player.name,
+    team: player.team,
+    soldierCount: player.soldierCount,
+    color: player.color
+  }));
+  els.modeSelect.value = String(game.mode);
+  game = null;
+  activeShot = null;
+  showSetup("Home");
+  saveSetupOnly();
 }
 
 function showSetup(message = "") {
@@ -310,7 +324,7 @@ function syncTurnUI() {
   els.turnTitle.textContent = game.winnerTeam ? `Team ${game.winnerTeam} wins` : `${player.name}'s turn`;
   els.turnTitle.style.color = player.color;
   els.turnMeta.textContent = game.winnerTeam
-    ? "Refresh to leave the finished match."
+    ? "Tap this panel for setup."
     : `Team ${player.team} • Soldier ${player.currentSoldier + 1}/${player.soldiers.length}`;
   setFormulaDisplay(soldier?.lastFunction || "", (soldier?.lastFunction || "").length);
   updateControls();
@@ -318,20 +332,20 @@ function syncTurnUI() {
 
 function updateControls() {
   const disabled = !game || !!activeShot || !!game.winnerTeam;
-  els.fireBtn.disabled = disabled;
   els.functionInput.disabled = disabled;
   els.formulaDisplay.classList.toggle("is-disabled", disabled);
   els.formulaButtons.forEach((button) => {
     button.disabled = disabled;
   });
-  els.skipAnimationBtn.classList.toggle("hidden", !activeShot);
 }
 
-function fireCurrentFunction() {
+function fireCurrentFunction(options = {}) {
   if (!game || activeShot || game.winnerTeam) return;
+  const fromTimer = options?.fromTimer === true;
   const expression = els.functionInput.value.trim();
   if (!expression) {
-    setMessage("Enter a formula with the side buttons.");
+    if (fromTimer) nextTurn(true);
+    else setMessage("Enter a formula with the side buttons, then tap the battlefield.");
     return;
   }
 
@@ -339,7 +353,8 @@ function fireCurrentFunction() {
   try {
     compiled = compileExpression(expression);
   } catch (error) {
-    setMessage(`Function error: ${error.message}`);
+    if (fromTimer) nextTurn(true);
+    else setMessage(`Function error: ${error.message}`);
     return;
   }
 
@@ -347,12 +362,14 @@ function fireCurrentFunction() {
   try {
     shot = computeShot(game, compiled);
   } catch (error) {
-    setMessage(`Shot error: ${error.message}`);
+    if (fromTimer) nextTurn(true);
+    else setMessage(`Shot error: ${error.message}`);
     return;
   }
 
   if (shot.path.length < 2) {
-    setMessage("That function ended immediately. Try something defined near your soldier.");
+    if (fromTimer) nextTurn(true);
+    else setMessage("That function ended immediately. Try something defined near your soldier.");
     return;
   }
 
@@ -436,8 +453,7 @@ function updateTimer() {
   const remaining = Math.max(0, TURN_TIME - (Date.now() - game.turnStarted));
   els.timerFill.style.width = `${(remaining / TURN_TIME) * 100}%`;
   if (remaining <= 0) {
-    setMessage("Time up. Turn skipped.");
-    nextTurn(true);
+    fireCurrentFunction({ fromTimer: true });
   }
 }
 
@@ -583,11 +599,15 @@ function currentSoldier() {
 function turnHelpText() {
   if (!game) return "";
   const player = currentPlayer();
-  return `${player.name}: build a formula. Team ${player.team} shoots ${player.team === 1 ? "right" : "left"}.`;
+  return `${player.name}: build formula, tap battlefield to fire. Team ${player.team} shoots ${player.team === 1 ? "right" : "left"}.`;
 }
 
 function setMessage(text) {
-  if (els.messageBox) els.messageBox.textContent = text || "";
+  if (game && document.body.classList.contains("play-mode")) {
+    els.turnMeta.textContent = text || turnHelpText();
+  } else if (text && els.saveStatus) {
+    els.saveStatus.textContent = text;
+  }
 }
 
 function saveSetupOnly() {

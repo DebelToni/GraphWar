@@ -53,7 +53,7 @@
 
       <section id="gamePanel" class="game-grid hidden">
         <aside class="panel pad-panel left-pad" aria-label="Number controls">
-          <div class="turn-card">
+          <div id="turnCard" class="turn-card" title="Tap for home/setup">
             <p id="modeLabel" class="eyebrow">Normal Function</p>
             <h2 id="turnTitle">Turn</h2>
             <div id="timerBar" class="timer-bar"><span></span></div>
@@ -94,13 +94,6 @@
             <input id="functionInput" type="hidden" autocomplete="off" spellcheck="false" inputmode="none" readonly />
           </label>
 
-          <div class="command-stack">
-            <div class="actions-row compact">
-              <button id="fireBtn" class="primary" type="button">Fire</button>
-              <button id="skipAnimationBtn" class="secondary hidden" type="button">Skip</button>
-            </div>
-            <div id="messageBox" class="message-box"></div>
-          </div>
         </div>
 
         <aside class="panel pad-panel right-pad" aria-label="Operator controls">
