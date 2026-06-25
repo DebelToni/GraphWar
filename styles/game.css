@@ -92,10 +92,52 @@
   padding: 0.35rem;
 }
 
-.formula-field input {
+#functionInput {
+  display: none;
+}
+
+.formula-display {
+  background: var(--screen);
+  border: 2px inset var(--panel-dark);
+  color: var(--ink);
+  cursor: text;
   font-size: clamp(1rem, 2.6vw, 1.35rem);
   font-weight: 700;
   min-height: 44px;
+  overflow-x: auto;
+  padding: 0.45rem 0.55rem;
+  touch-action: manipulation;
+  user-select: none;
+  white-space: pre;
+}
+
+.formula-display:focus {
+  box-shadow: 0 0 0 2px var(--yellow);
+  outline: none;
+}
+
+.formula-display.is-disabled {
+  opacity: 0.65;
+}
+
+.formula-caret {
+  animation: formula-caret-blink 0.95s steps(1) infinite;
+  background: var(--red);
+  display: inline-block;
+  height: 1.15em;
+  margin: 0 1px;
+  vertical-align: -0.18em;
+  width: 3px;
+}
+
+.formula-placeholder {
+  color: rgba(0, 0, 0, 0.35);
+}
+
+@keyframes formula-caret-blink {
+  50% {
+    opacity: 0;
+  }
 }
 
 .formula-keypad {

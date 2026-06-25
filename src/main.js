@@ -34,6 +34,7 @@ function init() {
     timerFill: document.querySelector("#timerBar span"),
     turnMeta: $("turnMeta"),
     functionLabel: $("functionLabel"),
+    formulaDisplay: $("formulaDisplay"),
     functionInput: $("functionInput"),
     angleValue: $("angleValue"),
     angleSlider: $("angleSlider"),
@@ -83,8 +84,7 @@ function bindEvents() {
   els.angleSlider.addEventListener("input", () => setCurrentAngle(Number(els.angleSlider.value)));
   els.angleDownBtn.addEventListener("click", () => setCurrentAngle(Number(els.angleSlider.value) - 5));
   els.angleUpBtn.addEventListener("click", () => setCurrentAngle(Number(els.angleSlider.value) + 5));
-  els.functionInput.addEventListener("click", rememberFormulaCursor);
-  els.functionInput.addEventListener("keyup", rememberFormulaCursor);
+  els.formulaDisplay.addEventListener("click", placeFormulaCursorFromPointer);
   bindFormulaPad();
 }
 
@@ -105,6 +105,37 @@ function preventMobileGestures() {
   document.addEventListener("gesturechange", (event) => event.preventDefault(), { passive: false });
   els.plane.addEventListener("touchstart", (event) => event.preventDefault(), { passive: false });
   els.plane.addEventListener("touchmove", (event) => event.preventDefault(), { passive: false });
+}
+
+async function requestLandscapeLock() {
+  const likelyPhone = matchMedia("(pointer: coarse) and (max-width: 950px), (pointer: coarse) and (max-height: 950px)").matches;
+  try {
+    if (likelyPhone && document.fullscreenEnabled && !document.fullscreenElement) {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch {
+    // CSS rotates the play field on browsers that refuse fullscreen/orientation lock.
+  }
+
+  try {
+    await screen.orientation?.lock?.("landscape");
+  } catch {
+    // Unsupported on iOS Safari and many non-fullscreen browsers.
+  }
+}
+
+function releaseLandscapeLock() {
+  try {
+    screen.orientation?.unlock?.();
+  } catch {
+    // Ignore unsupported orientation APIs.
+  }
+
+  try {
+    if (document.fullscreenElement) document.exitFullscreen?.();
+  } catch {
+    // Ignore unsupported fullscreen APIs.
+  }
 }
 
 function defaultPlayers() {
@@ -170,6 +201,7 @@ function returnToSetup() {
 
 function showSetup(message = "") {
   document.body.classList.remove("play-mode");
+  releaseLandscapeLock();
   els.setupPanel.classList.remove("hidden");
   els.gamePanel.classList.add("hidden");
   const saved = loadSavedState();
@@ -181,6 +213,7 @@ function showSetup(message = "") {
 
 function showGame(message = "") {
   document.body.classList.add("play-mode");
+  requestLandscapeLock();
   els.setupPanel.classList.add("hidden");
   els.gamePanel.classList.remove("hidden");
   syncTurnUI();
@@ -327,6 +360,7 @@ function updateControls() {
   const disabled = !game || !!activeShot || !!game.winnerTeam;
   els.fireBtn.disabled = disabled;
   els.functionInput.disabled = disabled;
+  els.formulaDisplay.classList.toggle("is-disabled", disabled);
   els.angleSlider.disabled = disabled || game.mode !== 2;
   els.angleDownBtn.disabled = disabled || game.mode !== 2;
   els.angleUpBtn.disabled = disabled || game.mode !== 2;
@@ -510,25 +544,37 @@ function setFormula(nextValue, cursor) {
 function setFormulaDisplay(value, cursor) {
   formulaCursor = clamp(cursor, 0, value.length);
   els.functionInput.value = value;
+  const before = escapeHtml(value.slice(0, formulaCursor));
+  const after = escapeHtml(value.slice(formulaCursor));
+  const placeholder = value ? "" : '<span class="formula-placeholder">formula</span>';
+  els.formulaDisplay.innerHTML = `${before}<span class="formula-caret" aria-hidden="true"></span>${after}${placeholder}`;
+  els.formulaDisplay.setAttribute("aria-valuetext", value);
   requestAnimationFrame(() => {
     try {
-      els.functionInput.focus({ preventScroll: true });
+      els.formulaDisplay.focus({ preventScroll: true });
     } catch {
-      els.functionInput.focus();
+      els.formulaDisplay.focus();
     }
-    els.functionInput.setSelectionRange(formulaCursor, formulaCursor);
   });
 }
 
 function getFormulaSelection() {
-  const start = els.functionInput.selectionStart ?? formulaCursor;
-  const end = els.functionInput.selectionEnd ?? start;
-  formulaCursor = end;
-  return [start, end];
+  return [formulaCursor, formulaCursor];
 }
 
-function rememberFormulaCursor() {
-  formulaCursor = els.functionInput.selectionEnd ?? formulaCursor;
+function placeFormulaCursorFromPointer(event) {
+  const value = els.functionInput.value;
+  const rect = els.formulaDisplay.getBoundingClientRect();
+  const style = getComputedStyle(els.formulaDisplay);
+  const fontSize = parseFloat(style.fontSize) || 18;
+  const paddingLeft = parseFloat(style.paddingLeft) || 0;
+  const charWidth = fontSize * 0.62;
+  const index = Math.round((event.clientX - rect.left - paddingLeft) / charWidth);
+  setFormulaDisplay(value, clamp(index, 0, value.length));
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[char]));
 }
 
 function currentPlayer() {
