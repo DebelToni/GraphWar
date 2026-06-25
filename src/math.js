@@ -1,5 +1,5 @@
 const FUNCTIONS = {
-  sqrt: Math.sqrt,
+  sqrt: (value) => Math.sqrt(Math.abs(value)),
   log: Math.log10,
   abs: Math.abs,
   sin: Math.sin,

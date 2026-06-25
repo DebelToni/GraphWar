@@ -10,6 +10,7 @@ export function draw(canvas, game, activeShot) {
   drawGrid(ctx);
   if (game) drawTerrain(ctx, game.terrain);
   drawAxes(ctx);
+  if (game && !activeShot) drawLastShot(ctx, game);
   if (activeShot) drawShot(ctx, game, activeShot);
   if (game) drawSoldiers(ctx, game);
   if (game?.winnerTeam) drawWinner(ctx, game.winnerTeam);
@@ -69,6 +70,25 @@ function drawAxes(ctx) {
   ctx.fillText("25", W - 22, H / 2 - 5);
   ctx.fillText("15", W / 2 + 5, 14);
   ctx.fillText("-15", W / 2 + 5, H - 6);
+  ctx.restore();
+}
+
+function drawLastShot(ctx, game) {
+  const player = game.players[game.currentTurn];
+  const soldier = player?.soldiers[player.currentSoldier];
+  const path = soldier?.lastShotPath;
+  if (!path || path.length < 2) return;
+
+  ctx.save();
+  ctx.strokeStyle = "rgba(30, 30, 30, 0.62)";
+  ctx.lineWidth = 0.65;
+  ctx.setLineDash([5, 5]);
+  ctx.beginPath();
+  ctx.moveTo(path[0].x, path[0].y);
+  for (let i = 1; i < path.length; i += 1) {
+    ctx.lineTo(path[i].x, path[i].y);
+  }
+  ctx.stroke();
   ctx.restore();
 }
 

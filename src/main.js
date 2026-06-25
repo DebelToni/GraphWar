@@ -253,6 +253,7 @@ function startNewMatch(message = "") {
       soldier.alive = true;
       soldier.angle = 0;
       soldier.lastFunction = "";
+      soldier.lastShotPath = [];
       player.soldiers.push(soldier);
       placed.push(soldier);
     }
@@ -357,6 +358,7 @@ function fireCurrentFunction() {
 
   const soldier = currentSoldier();
   soldier.lastFunction = expression;
+  soldier.lastShotPath = sampleShotPath(shot.path);
   soldier.angle = shot.fireAngle;
   activeShot = {
     ...shot,
@@ -389,6 +391,17 @@ function applyHitsThrough(step) {
     soldier.alive = false;
     hit.applied = true;
   });
+}
+
+function sampleShotPath(path) {
+  const sampled = [];
+  for (let i = 0; i < path.length; i += 12) {
+    sampled.push({ x: path[i].x, y: path[i].y });
+  }
+  const last = path[path.length - 1];
+  const sampledLast = sampled[sampled.length - 1];
+  if (last && (!sampledLast || sampledLast.x !== last.x || sampledLast.y !== last.y)) sampled.push({ x: last.x, y: last.y });
+  return sampled;
 }
 
 function finishActiveShot() {
@@ -601,6 +614,7 @@ function normalizeSavedGame(savedGame) {
   savedGame.players.forEach((player) => {
     player.soldiers.forEach((soldier) => {
       if (typeof soldier.lastFunction !== "string") soldier.lastFunction = "";
+      if (!Array.isArray(soldier.lastShotPath)) soldier.lastShotPath = [];
       if (typeof soldier.angle !== "number") soldier.angle = 0;
     });
   });
