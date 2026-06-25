@@ -8,8 +8,7 @@
 
 .section-head,
 .players-head,
-.actions-row,
-.angle-head {
+.actions-row {
   align-items: center;
   display: flex;
   gap: 0.65rem;

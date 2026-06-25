@@ -11,7 +11,6 @@
   .pad-panel,
   .stage-card,
   .formula-field,
-  .angle-box,
   .message-box,
   .rules-box {
     box-shadow: 2px 2px 0 var(--shadow);
@@ -31,8 +30,7 @@
   }
 
   .formula-keypad button,
-  .actions-row button,
-  .angle-buttons button {
+  .actions-row button {
     min-height: 32px;
   }
 
@@ -47,13 +45,11 @@
   .meta,
   .eyebrow,
   .field span,
-  .angle-head span,
   .formula-field span {
     font-size: 0.63rem;
   }
 
   .formula-field,
-  .angle-box,
   .message-box,
   .rules-box {
     padding: 0.3rem;
@@ -62,10 +58,6 @@
   .formula-display {
     min-height: 36px;
     padding: 0.3rem;
-  }
-
-  .bottom-console {
-    grid-template-columns: minmax(8rem, 13rem) minmax(0, 1fr);
   }
 
   .rules-box {
@@ -97,10 +89,6 @@
     gap: 0.25rem;
     grid-template-columns: minmax(8.4rem, 17vw) minmax(0, 1fr) minmax(8.4rem, 17vw);
     height: 100%;
-  }
-
-  .play-mode .bottom-console {
-    grid-template-columns: minmax(8rem, 13rem) minmax(0, 1fr);
   }
 
   .play-mode .rules-box {

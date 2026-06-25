@@ -3,7 +3,7 @@ import { compileExpression } from "./math.js";
 import { draw } from "./render.js";
 import { addExplosionHole, computeShot, generateCircles, generateSoldier } from "./simulation.js";
 import { clearSavedState, loadSavedState, saveState as persistState } from "./storage.js";
-import { clamp, degToRad, escapeAttr, radToDeg } from "./utils.js";
+import { clamp, escapeAttr } from "./utils.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -36,14 +36,8 @@ function init() {
     functionLabel: $("functionLabel"),
     formulaDisplay: $("formulaDisplay"),
     functionInput: $("functionInput"),
-    angleValue: $("angleValue"),
-    angleSlider: $("angleSlider"),
-    angleDownBtn: $("angleDownBtn"),
-    angleUpBtn: $("angleUpBtn"),
     fireBtn: $("fireBtn"),
     skipAnimationBtn: $("skipAnimationBtn"),
-    newLevelBtn: $("newLevelBtn"),
-    backSetupBtn: $("backSetupBtn"),
     messageBox: $("messageBox"),
     formulaButtons: [...document.querySelectorAll(".formula-keypad button")]
   });
@@ -79,12 +73,7 @@ function bindEvents() {
   els.resumeGameBtn.addEventListener("click", resumeSavedGame);
   els.fireBtn.addEventListener("click", fireCurrentFunction);
   els.skipAnimationBtn.addEventListener("click", finishActiveShot);
-  els.newLevelBtn.addEventListener("click", startNextLevel);
-  els.backSetupBtn.addEventListener("click", returnToSetup);
-  els.angleSlider.addEventListener("input", () => setCurrentAngle(Number(els.angleSlider.value)));
-  els.angleDownBtn.addEventListener("click", () => setCurrentAngle(Number(els.angleSlider.value) - 5));
-  els.angleUpBtn.addEventListener("click", () => setCurrentAngle(Number(els.angleSlider.value) + 5));
-  els.formulaDisplay.addEventListener("click", placeFormulaCursorFromPointer);
+  els.formulaDisplay.addEventListener("pointerdown", placeFormulaCursorFromPointer);
   bindFormulaPad();
 }
 
@@ -169,34 +158,6 @@ function resumeSavedGame() {
   game.turnStarted = Date.now();
   normalizeSavedGame(game);
   showGame("Restored saved local match.");
-}
-
-function startNextLevel() {
-  if (!game) return;
-  setupPlayers = game.players.map((player) => ({
-    name: player.name,
-    team: player.team,
-    soldierCount: player.soldierCount,
-    color: player.color
-  }));
-  els.modeSelect.value = String(game.mode);
-  startNewMatch("New level started.");
-}
-
-function returnToSetup() {
-  if (game) {
-    setupPlayers = game.players.map((player) => ({
-      name: player.name,
-      team: player.team,
-      soldierCount: player.soldierCount,
-      color: player.color
-    }));
-    els.modeSelect.value = String(game.mode);
-  }
-  game = null;
-  activeShot = null;
-  showSetup("Back to setup.");
-  saveSetupOnly();
 }
 
 function showSetup(message = "") {
@@ -348,11 +309,9 @@ function syncTurnUI() {
   els.turnTitle.textContent = game.winnerTeam ? `Team ${game.winnerTeam} wins` : `${player.name}'s turn`;
   els.turnTitle.style.color = player.color;
   els.turnMeta.textContent = game.winnerTeam
-    ? "Start a new level or go back to setup."
+    ? "Refresh to leave the finished match."
     : `Team ${player.team} • Soldier ${player.currentSoldier + 1}/${player.soldiers.length}`;
   setFormulaDisplay(soldier?.lastFunction || "", (soldier?.lastFunction || "").length);
-  els.angleSlider.value = String(Math.round(radToDeg(soldier?.angle || 0)));
-  updateAngleText();
   updateControls();
 }
 
@@ -361,28 +320,10 @@ function updateControls() {
   els.fireBtn.disabled = disabled;
   els.functionInput.disabled = disabled;
   els.formulaDisplay.classList.toggle("is-disabled", disabled);
-  els.angleSlider.disabled = disabled || game.mode !== 2;
-  els.angleDownBtn.disabled = disabled || game.mode !== 2;
-  els.angleUpBtn.disabled = disabled || game.mode !== 2;
   els.formulaButtons.forEach((button) => {
     button.disabled = disabled;
   });
   els.skipAnimationBtn.classList.toggle("hidden", !activeShot);
-}
-
-function setCurrentAngle(degrees) {
-  if (!game || activeShot) return;
-  const soldier = currentSoldier();
-  const clamped = clamp(degrees, -90, 90);
-  els.angleSlider.value = String(clamped);
-  if (soldier) soldier.angle = degToRad(clamped);
-  updateAngleText();
-  saveCurrentState();
-  draw(els.plane, game, activeShot);
-}
-
-function updateAngleText() {
-  els.angleValue.textContent = `${Math.round(Number(els.angleSlider.value))}°`;
 }
 
 function fireCurrentFunction() {
@@ -544,10 +485,27 @@ function setFormula(nextValue, cursor) {
 function setFormulaDisplay(value, cursor) {
   formulaCursor = clamp(cursor, 0, value.length);
   els.functionInput.value = value;
-  const before = escapeHtml(value.slice(0, formulaCursor));
-  const after = escapeHtml(value.slice(formulaCursor));
-  const placeholder = value ? "" : '<span class="formula-placeholder">formula</span>';
-  els.formulaDisplay.innerHTML = `${before}<span class="formula-caret" aria-hidden="true"></span>${after}${placeholder}`;
+  els.formulaDisplay.textContent = "";
+
+  if (!value) {
+    els.formulaDisplay.appendChild(makeCaret());
+    const placeholder = document.createElement("span");
+    placeholder.className = "formula-placeholder";
+    placeholder.textContent = "formula";
+    els.formulaDisplay.appendChild(placeholder);
+  } else {
+    for (let i = 0; i <= value.length; i += 1) {
+      if (i === formulaCursor) els.formulaDisplay.appendChild(makeCaret());
+      if (i < value.length) {
+        const char = document.createElement("span");
+        char.className = "formula-char";
+        char.dataset.index = String(i);
+        char.textContent = value[i];
+        els.formulaDisplay.appendChild(char);
+      }
+    }
+  }
+
   els.formulaDisplay.setAttribute("aria-valuetext", value);
   requestAnimationFrame(() => {
     try {
@@ -555,7 +513,16 @@ function setFormulaDisplay(value, cursor) {
     } catch {
       els.formulaDisplay.focus();
     }
+    els.formulaDisplay.querySelector(".formula-caret")?.scrollIntoView({ block: "nearest", inline: "nearest" });
   });
+}
+
+function makeCaret() {
+  const caret = document.createElement("span");
+  caret.className = "formula-caret";
+  caret.setAttribute("aria-hidden", "true");
+  caret.textContent = "▌";
+  return caret;
 }
 
 function getFormulaSelection() {
@@ -563,18 +530,32 @@ function getFormulaSelection() {
 }
 
 function placeFormulaCursorFromPointer(event) {
+  event.preventDefault();
+  if (!game || activeShot || game.winnerTeam) return;
   const value = els.functionInput.value;
-  const rect = els.formulaDisplay.getBoundingClientRect();
-  const style = getComputedStyle(els.formulaDisplay);
-  const fontSize = parseFloat(style.fontSize) || 18;
-  const paddingLeft = parseFloat(style.paddingLeft) || 0;
-  const charWidth = fontSize * 0.62;
-  const index = Math.round((event.clientX - rect.left - paddingLeft) / charWidth);
-  setFormulaDisplay(value, clamp(index, 0, value.length));
-}
+  const chars = [...els.formulaDisplay.querySelectorAll(".formula-char")];
+  let nextCursor = value.length;
 
-function escapeHtml(value) {
-  return String(value).replace(/[&<>]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[char]));
+  if (!chars.length) {
+    nextCursor = 0;
+  } else if (event.clientX <= chars[0].getBoundingClientRect().left) {
+    nextCursor = 0;
+  } else {
+    for (const char of chars) {
+      const rect = char.getBoundingClientRect();
+      const index = Number(char.dataset.index);
+      if (event.clientX < rect.left + rect.width / 2) {
+        nextCursor = index;
+        break;
+      }
+      if (event.clientX <= rect.right) {
+        nextCursor = index + 1;
+        break;
+      }
+    }
+  }
+
+  setFormulaDisplay(value, clamp(nextCursor, 0, value.length));
 }
 
 function currentPlayer() {

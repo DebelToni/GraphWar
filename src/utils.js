@@ -12,14 +12,6 @@ export function randomGaussian() {
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
 }
 
-export function degToRad(degrees) {
-  return (degrees * Math.PI) / 180;
-}
-
-export function radToDeg(radians) {
-  return (radians * 180) / Math.PI;
-}
-
 export function pixelToGame(px, py) {
   return {
     x: (GAME_W * (px - W / 2)) / W,

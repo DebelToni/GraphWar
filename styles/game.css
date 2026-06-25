@@ -120,14 +120,20 @@
   opacity: 0.65;
 }
 
+.formula-char {
+  display: inline-block;
+  min-width: 0.62em;
+}
+
 .formula-caret {
   animation: formula-caret-blink 0.95s steps(1) infinite;
-  background: var(--red);
+  color: var(--red);
   display: inline-block;
-  height: 1.15em;
+  font-weight: 900;
+  line-height: 1;
   margin: 0 1px;
-  vertical-align: -0.18em;
-  width: 3px;
+  text-shadow: 1px 0 0 var(--red);
+  vertical-align: -0.08em;
 }
 
 .formula-placeholder {
@@ -160,29 +166,6 @@
   padding: 0.25rem;
 }
 
-.bottom-console {
-  display: grid;
-  gap: 0.35rem;
-  grid-template-columns: minmax(10rem, 16rem) minmax(0, 1fr);
-  min-height: 0;
-}
-
-.angle-box {
-  display: grid;
-  gap: 0.35rem;
-  padding: 0.45rem;
-}
-
-.angle-head {
-  color: var(--ink);
-}
-
-.angle-box input {
-  min-height: auto;
-  padding: 0;
-}
-
-.angle-buttons,
 .actions-row.compact {
   display: grid;
   gap: 0.35rem;
@@ -192,7 +175,7 @@
 .command-stack {
   display: grid;
   gap: 0.35rem;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   min-height: 0;
 }
 

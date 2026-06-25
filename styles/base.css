@@ -176,7 +176,6 @@ h3 {
 .panel,
 .stage-card,
 .formula-field,
-.angle-box,
 .message-box,
 .rules-box {
   background: var(--panel);
@@ -191,7 +190,6 @@ h3 {
 }
 
 .field span,
-.angle-head span,
 .formula-field span {
   color: var(--muted);
   font-size: 0.72rem;
