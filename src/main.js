@@ -72,6 +72,7 @@ function bindEvents() {
   els.plane.addEventListener("pointerup", fireCurrentFunction);
   els.turnCard.addEventListener("click", confirmReturnHome);
   els.formulaDisplay.addEventListener("pointerdown", placeFormulaCursorFromPointer);
+  document.addEventListener("keydown", handleHardwareKeyboard);
   bindFormulaPad();
 }
 
@@ -472,6 +473,58 @@ function checkWinner() {
   return false;
 }
 
+function handleHardwareKeyboard(event) {
+  if (!game || activeShot || game.winnerTeam || !document.body.classList.contains("play-mode")) return;
+  if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+  if (event.key === "Enter") {
+    event.preventDefault();
+    fireCurrentFunction();
+    return;
+  }
+
+  if (event.key === "Backspace") {
+    event.preventDefault();
+    runFormulaAction("backspace");
+    return;
+  }
+
+  if (event.key === "Delete") {
+    event.preventDefault();
+    deleteFormulaForward();
+    return;
+  }
+
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    runFormulaAction("left");
+    return;
+  }
+
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    runFormulaAction("right");
+    return;
+  }
+
+  if (event.key === "Home") {
+    event.preventDefault();
+    setFormulaDisplay(els.functionInput.value, 0);
+    return;
+  }
+
+  if (event.key === "End") {
+    event.preventDefault();
+    setFormulaDisplay(els.functionInput.value, els.functionInput.value.length);
+    return;
+  }
+
+  if (event.key.length === 1 && /^[a-zA-Z0-9+\-*/^().,']$/.test(event.key)) {
+    event.preventDefault();
+    insertFormulaText(event.key.toLowerCase());
+  }
+}
+
 function insertFormulaText(text) {
   const [start, end] = getFormulaSelection();
   const value = els.functionInput.value;
@@ -497,6 +550,14 @@ function runFormulaAction(action) {
     if (start !== end) return setFormula(value.slice(0, start) + value.slice(end), start);
     if (start > 0) return setFormula(value.slice(0, start - 1) + value.slice(end), start - 1);
   }
+  return undefined;
+}
+
+function deleteFormulaForward() {
+  const [start, end] = getFormulaSelection();
+  const value = els.functionInput.value;
+  if (start !== end) return setFormula(value.slice(0, start) + value.slice(end), start);
+  if (start < value.length) return setFormula(value.slice(0, start) + value.slice(start + 1), start);
   return undefined;
 }
 
