@@ -1,0 +1,46 @@
+.setup-panel {
+  display: grid;
+  gap: 1rem;
+  margin: 0 auto;
+  max-width: 920px;
+  padding: clamp(0.85rem, 3vw, 1.3rem);
+}
+
+.section-head,
+.players-head,
+.actions-row,
+.angle-head {
+  align-items: center;
+  display: flex;
+  gap: 0.65rem;
+  justify-content: space-between;
+}
+
+.section-head p {
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+
+.players-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.player-row {
+  align-items: end;
+  background: #b7b7a8;
+  border: 2px inset var(--panel-dark);
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: minmax(9rem, 1fr) 8rem 8rem auto;
+  padding: 0.65rem;
+}
+
+.color-dot {
+  border: 1px solid var(--ink);
+  display: inline-block;
+  height: 0.85rem;
+  margin-right: 0.35rem;
+  vertical-align: -0.08rem;
+  width: 0.85rem;
+}

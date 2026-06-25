@@ -1,0 +1,9 @@
+{
+  "name": "GraphWar",
+  "short_name": "GraphWar",
+  "start_url": ".",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#2f6f39",
+  "theme_color": "#15331a"
+}

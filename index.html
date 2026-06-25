@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>GraphWar</title>
+    <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -51,72 +52,105 @@
       </section>
 
       <section id="gamePanel" class="game-grid hidden">
-        <div class="stage-card">
-          <canvas id="plane" width="770" height="450" aria-label="GraphWar plane"></canvas>
-          <div class="mobile-hint">Tip: constants added in Normal mode do not matter because the graph is shifted to the soldier.</div>
-        </div>
-
-        <aside class="panel control-panel">
+        <aside class="panel pad-panel left-pad" aria-label="Number controls">
           <div class="turn-card">
             <p id="modeLabel" class="eyebrow">Normal Function</p>
             <h2 id="turnTitle">Turn</h2>
             <div id="timerBar" class="timer-bar"><span></span></div>
             <p id="turnMeta" class="meta"></p>
           </div>
+          <div id="numberPad" class="formula-keypad number-pad">
+            <button type="button" data-key="7">7</button>
+            <button type="button" data-key="8">8</button>
+            <button type="button" data-key="9">9</button>
+            <button type="button" data-action="left">←</button>
+            <button type="button" data-key="4">4</button>
+            <button type="button" data-key="5">5</button>
+            <button type="button" data-key="6">6</button>
+            <button type="button" data-action="right">→</button>
+            <button type="button" data-key="1">1</button>
+            <button type="button" data-key="2">2</button>
+            <button type="button" data-key="3">3</button>
+            <button type="button" data-action="backspace">⌫</button>
+            <button type="button" data-key="0">0</button>
+            <button type="button" data-key=".">.</button>
+            <button type="button" data-key="(">(</button>
+            <button type="button" data-key=")">)</button>
+            <button type="button" data-key="x">x</button>
+            <button type="button" data-key="y">y</button>
+            <button type="button" data-key="y'">y'</button>
+            <button type="button" data-action="clear">CLR</button>
+          </div>
+        </aside>
 
-          <label class="field">
+        <div class="center-play">
+          <div class="stage-card">
+            <canvas id="plane" width="770" height="450" aria-label="GraphWar plane"></canvas>
+          </div>
+
+          <label class="formula-field">
             <span id="functionLabel">Function</span>
-            <input id="functionInput" autocomplete="off" spellcheck="false" inputmode="text" placeholder="sin(x)" />
+            <input id="functionInput" autocomplete="off" spellcheck="false" inputmode="none" readonly placeholder="" />
           </label>
 
-          <div id="presetButtons" class="preset-buttons"></div>
-
-          <div class="angle-box">
-            <div class="angle-head">
-              <span>Angle</span>
-              <strong id="angleValue">0°</strong>
+          <div class="bottom-console">
+            <div class="angle-box">
+              <div class="angle-head">
+                <span>Angle</span>
+                <strong id="angleValue">0°</strong>
+              </div>
+              <input id="angleSlider" type="range" min="-90" max="90" step="1" value="0" />
+              <div class="angle-buttons">
+                <button id="angleDownBtn" class="secondary" type="button">−</button>
+                <button id="angleUpBtn" class="secondary" type="button">+</button>
+              </div>
             </div>
-            <input id="angleSlider" type="range" min="-90" max="90" step="1" value="0" />
-            <div class="angle-buttons">
-              <button id="angleDownBtn" class="secondary" type="button">−</button>
-              <button id="angleUpBtn" class="secondary" type="button">+</button>
+
+            <div class="command-stack">
+              <div class="actions-row compact">
+                <button id="fireBtn" class="primary" type="button">Fire</button>
+                <button id="skipAnimationBtn" class="secondary hidden" type="button">Skip</button>
+              </div>
+              <div class="actions-row compact">
+                <button id="newLevelBtn" class="secondary" type="button">New level</button>
+                <button id="backSetupBtn" class="secondary" type="button">Setup</button>
+              </div>
+              <div id="messageBox" class="message-box"></div>
             </div>
-            <small>Only second-order ODE shots use the angle, matching original Graphwar.</small>
           </div>
+        </div>
 
-          <div class="actions-row compact">
-            <button id="fireBtn" class="primary" type="button">Fire</button>
-            <button id="skipAnimationBtn" class="secondary hidden" type="button">Skip animation</button>
+        <aside class="panel pad-panel right-pad" aria-label="Operator controls">
+          <div id="operatorPad" class="formula-keypad operator-pad">
+            <button type="button" data-key="+">+</button>
+            <button type="button" data-key="-">−</button>
+            <button type="button" data-key="*">×</button>
+            <button type="button" data-key="/">÷</button>
+            <button type="button" data-key="^">^</button>
+            <button type="button" data-key="pi">π</button>
+            <button type="button" data-wrap="sin">sin</button>
+            <button type="button" data-wrap="cos">cos</button>
+            <button type="button" data-wrap="tan">tan</button>
+            <button type="button" data-wrap="abs">abs</button>
+            <button type="button" data-wrap="sqrt">sqrt</button>
+            <button type="button" data-wrap="log">log</button>
+            <button type="button" data-wrap="ln">ln</button>
+            <button type="button" data-wrap="exp">exp</button>
+            <button type="button" data-key="e">e</button>
+            <button type="button" data-key="/10">/10</button>
           </div>
-
-          <div class="actions-row compact">
-            <button id="newLevelBtn" class="secondary" type="button">New level</button>
-            <button id="backSetupBtn" class="secondary" type="button">Setup</button>
-          </div>
-
-          <div id="messageBox" class="message-box"></div>
           <details class="rules-box">
-            <summary>Rules reference</summary>
+            <summary>Rules</summary>
             <ul>
-              <li>Hit enemy soldiers while avoiding obstacles and teammates.</li>
-              <li>Team 1 fires right; Team 2 fires left by mirroring the plane.</li>
-              <li>A shot stops on terrain, screen bounds, undefined values, or max length.</li>
-              <li>Explosion holes remove terrain for later shots.</li>
+              <li>Team 1 fires right; Team 2 fires left.</li>
+              <li>Normal mode shifts the graph through the soldier.</li>
+              <li>Shots stop on terrain, bounds, undefined values, or max length.</li>
             </ul>
           </details>
         </aside>
       </section>
     </main>
 
-    <script>
-      window.addEventListener("DOMContentLoaded", () => {
-        const plane = document.getElementById("plane");
-        if (!plane) return;
-        const lockCanvasGesture = (event) => event.preventDefault();
-        plane.addEventListener("touchstart", lockCanvasGesture, { passive: false });
-        plane.addEventListener("touchmove", lockCanvasGesture, { passive: false });
-      });
-    </script>
-    <script src="app.js"></script>
+    <script type="module" src="src/main.js"></script>
   </body>
 </html>

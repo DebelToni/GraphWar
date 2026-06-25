@@ -1,0 +1,123 @@
+@media (orientation: landscape) and (max-height: 620px) {
+  .play-mode .app-shell {
+    padding: 0.2rem;
+  }
+
+  .game-grid {
+    gap: 0.25rem;
+    grid-template-columns: minmax(8.4rem, 17vw) minmax(0, 1fr) minmax(8.4rem, 17vw);
+  }
+
+  .pad-panel,
+  .stage-card,
+  .formula-field,
+  .angle-box,
+  .message-box,
+  .rules-box {
+    box-shadow: 2px 2px 0 var(--shadow);
+  }
+
+  .pad-panel {
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+
+  .center-play {
+    gap: 0.25rem;
+  }
+
+  .formula-keypad {
+    gap: 0.2rem;
+  }
+
+  .formula-keypad button,
+  .actions-row button,
+  .angle-buttons button {
+    min-height: 32px;
+  }
+
+  .turn-card {
+    padding: 0.3rem;
+  }
+
+  .turn-card h2 {
+    font-size: 0.95rem;
+  }
+
+  .meta,
+  .eyebrow,
+  .field span,
+  .angle-head span,
+  .formula-field span {
+    font-size: 0.63rem;
+  }
+
+  .formula-field,
+  .angle-box,
+  .message-box,
+  .rules-box {
+    padding: 0.3rem;
+  }
+
+  .formula-field input {
+    min-height: 36px;
+    padding: 0.3rem;
+  }
+
+  .bottom-console {
+    grid-template-columns: minmax(8rem, 13rem) minmax(0, 1fr);
+  }
+
+  .rules-box {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  body.play-mode {
+    overflow: auto;
+  }
+
+  .play-mode .app-shell {
+    height: auto;
+  }
+
+  .game-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .center-play {
+    order: -1;
+  }
+
+  .stage-card {
+    height: 52vh;
+  }
+
+  .bottom-console {
+    grid-template-columns: 1fr;
+  }
+
+  .pad-panel {
+    min-height: 18rem;
+  }
+}
+
+@media (max-width: 680px) {
+  .app-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .section-head,
+  .players-head,
+  .actions-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .player-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "graphwar",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "for f in src/*.js; do node --check \"$f\"; done"
+  }
+}

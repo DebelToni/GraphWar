@@ -1,0 +1,200 @@
+:root {
+  color-scheme: dark;
+  --bg: #2f6f39;
+  --bg-dark: #15331a;
+  --panel: #c6c6b8;
+  --panel-dark: #8d8d82;
+  --panel-light: #f1f1df;
+  --ink: #111;
+  --muted: #263829;
+  --screen: #fefef4;
+  --red: #b21f16;
+  --blue: #17468f;
+  --yellow: #e7e08b;
+  --shadow: rgba(0, 0, 0, 0.36);
+  font-family: "Courier New", Courier, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  background-image:
+    linear-gradient(45deg, rgba(255,255,255,0.04) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(0,0,0,0.04) 25%, transparent 25%);
+  background-size: 18px 18px;
+  color: var(--ink);
+  overflow-x: hidden;
+  overscroll-behavior: none;
+}
+
+body.play-mode {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  background: var(--panel);
+  border: 2px solid;
+  border-color: var(--panel-light) var(--ink) var(--ink) var(--panel-light);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 var(--shadow);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 40px;
+  padding: 0.45rem 0.55rem;
+  touch-action: manipulation;
+}
+
+button:active:not(:disabled) {
+  border-color: var(--ink) var(--panel-light) var(--panel-light) var(--ink);
+  box-shadow: inset 2px 2px 0 var(--shadow);
+  transform: translate(1px, 1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+input,
+select {
+  background: var(--screen);
+  border: 2px inset var(--panel-dark);
+  border-radius: 0;
+  color: var(--ink);
+  min-height: 40px;
+  outline: none;
+  padding: 0.45rem 0.55rem;
+  width: 100%;
+}
+
+input:focus,
+select:focus {
+  box-shadow: 0 0 0 2px var(--yellow);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  color: #f8f8e8;
+  font-size: clamp(1.8rem, 5vw, 3.6rem);
+  letter-spacing: -0.08em;
+  text-shadow: 3px 3px 0 #102713;
+}
+
+h2 {
+  font-size: clamp(1.05rem, 2.5vw, 1.5rem);
+}
+
+h3 {
+  font-size: 1rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.primary {
+  background: #d6e889;
+}
+
+.secondary {
+  background: var(--panel);
+}
+
+.danger {
+  background: #df7f72;
+}
+
+.eyebrow {
+  color: #f8f8e8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.app-header {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 1240px;
+  padding: 0.75rem clamp(0.75rem, 2vw, 1.25rem) 0.35rem;
+}
+
+.play-mode .app-header {
+  display: none;
+}
+
+.save-status {
+  background: var(--panel);
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--shadow);
+  color: var(--ink);
+  font-size: 0.8rem;
+  padding: 0.35rem 0.55rem;
+  white-space: nowrap;
+}
+
+.app-shell {
+  margin: 0 auto;
+  max-width: 1240px;
+  padding: clamp(0.65rem, 2vw, 1.25rem);
+}
+
+.play-mode .app-shell {
+  height: 100dvh;
+  max-width: none;
+  padding: 0.35rem;
+}
+
+.panel,
+.stage-card,
+.formula-field,
+.angle-box,
+.message-box,
+.rules-box {
+  background: var(--panel);
+  border: 2px solid;
+  border-color: var(--panel-light) var(--ink) var(--ink) var(--panel-light);
+  box-shadow: 3px 3px 0 var(--shadow);
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.field span,
+.angle-head span,
+.formula-field span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}

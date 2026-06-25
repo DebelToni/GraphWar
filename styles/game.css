@@ -1,0 +1,179 @@
+.game-grid {
+  align-items: stretch;
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: minmax(9.5rem, 15vw) minmax(0, 1fr) minmax(9.5rem, 15vw);
+  height: 100%;
+}
+
+.pad-panel,
+.center-play {
+  min-height: 0;
+}
+
+.pad-panel {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-rows: auto 1fr auto;
+  padding: 0.35rem;
+}
+
+.right-pad {
+  grid-template-rows: 1fr auto;
+}
+
+.center-play {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+}
+
+.stage-card {
+  align-items: center;
+  background: #42423b;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0.3rem;
+}
+
+#plane {
+  background: #fff;
+  border: 2px solid #000;
+  display: block;
+  height: 100%;
+  image-rendering: auto;
+  max-width: 100%;
+  object-fit: contain;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  width: 100%;
+}
+
+.turn-card {
+  background: var(--bg-dark);
+  border: 2px inset #0b1b0e;
+  color: #f8f8e8;
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.45rem;
+}
+
+.turn-card h2 {
+  font-size: clamp(0.95rem, 2vw, 1.2rem);
+  line-height: 1.05;
+}
+
+.meta {
+  color: #e5e5c8;
+  font-size: 0.75rem;
+}
+
+.timer-bar {
+  background: #0a180c;
+  border: 1px solid #000;
+  height: 0.55rem;
+  overflow: hidden;
+}
+
+.timer-bar span {
+  background: var(--yellow);
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.formula-field {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.35rem;
+}
+
+.formula-field input {
+  font-size: clamp(1rem, 2.6vw, 1.35rem);
+  font-weight: 700;
+  min-height: 44px;
+}
+
+.formula-keypad {
+  display: grid;
+  gap: 0.3rem;
+  height: 100%;
+}
+
+.number-pad {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.operator-pad {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.formula-keypad button {
+  font-size: clamp(0.86rem, 2.2vw, 1.1rem);
+  min-height: 0;
+  padding: 0.25rem;
+}
+
+.bottom-console {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: minmax(10rem, 16rem) minmax(0, 1fr);
+  min-height: 0;
+}
+
+.angle-box {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.45rem;
+}
+
+.angle-head {
+  color: var(--ink);
+}
+
+.angle-box input {
+  min-height: auto;
+  padding: 0;
+}
+
+.angle-buttons,
+.actions-row.compact {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.command-stack {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  min-height: 0;
+}
+
+.message-box {
+  color: var(--ink);
+  font-size: clamp(0.78rem, 1.7vw, 0.95rem);
+  min-height: 0;
+  overflow: hidden;
+  padding: 0.45rem;
+  white-space: pre-line;
+}
+
+.rules-box {
+  font-size: 0.76rem;
+  padding: 0.45rem;
+}
+
+.rules-box summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.rules-box ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1rem;
+}
