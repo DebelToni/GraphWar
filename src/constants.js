@@ -9,7 +9,7 @@ export const STEP = 0.01;
 export const MIN_STEP = 0.00001;
 export const MAX_SEGMENT_D2 = 0.001;
 export const MAX_STEPS = 12000;
-export const MAX_SHOT_PIXEL_LENGTH = 1250;
+export const MAX_SHOT_PIXEL_LENGTH = 5000;
 export const TURN_TIME = 60000;
 export const SHOT_SPEED = 1500;
 
